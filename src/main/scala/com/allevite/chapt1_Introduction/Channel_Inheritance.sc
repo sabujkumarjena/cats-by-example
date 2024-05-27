@@ -18,7 +18,7 @@ object FileChannel extends Channel :
   override def write(obj: ByteEncodable): Unit =
     val bytes: Array[Byte] = obj.encode()
 
-    Using(new FileOutputStream("fp-course/test")) { os =>
+    Using(new FileOutputStream("test")) { os =>
       os.write(bytes)
       os.flush()
     }
