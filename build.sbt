@@ -5,9 +5,9 @@ val catsVersion = "2.10.0" //"2.9.0"
 lazy val root = (project in file("."))
   .settings(
     name := "cats-by-example",
-//    resolvers ++= Seq(
-//      "Artima Maven Repository" at "https://repo.artima.com/releases"
-//    ),
+    resolvers ++= Seq(
+      "Artima Maven Repository" at "https://repo.artima.com/releases"
+    ),
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-core" % catsVersion,
 

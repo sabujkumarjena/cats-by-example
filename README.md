@@ -1,9 +1,9 @@
-# CATS BY EXAMPLES #
-# 1. Introduction #
+# CATS BY EXAMPLES 
+# 1. Introduction 
 
 ----
 
-### Agenda ###
+### Agenda 
 - Channel
 - Implicits & Helper methods
 - Laws
@@ -38,7 +38,7 @@ Disadvantage:
 - only one implementation
 - overloaded interface
 
-## Typeclass ##
+## Typeclass 
 ```scala
 trait Channel:
   def write[A](obj: A, enc: ByteEncoder[A]): Unit
@@ -51,7 +51,7 @@ Advantage:
 - cleaner interface
 - several implementations possible
 
-## Typeclass: Helper Methods ##
+## Typeclass: Helper Methods 
 
 summons the instance in given scope
 ```scala
@@ -62,4 +62,39 @@ helps create instances
 ```scala
 object ByteEncoder:
   def instance[A] (f: A => Array[Byte]): ByteEncoder[A]
+```
+Adding **read** method to the **Channel**
+```scala
+trait Channel:
+  def write[A](obj: A)(using enc: ByteEncoder[A]): Unit
+  def read[A]()(using dec: ByteDecoder[A]): A
+
+trait ByteDecoder[A]:
+  def decode(bytes: Array[Byte]): Option[A]
+```
+### Typeclass ByteCodec
+```scala
+trait ByteCodec[A] extends ByteEncoder with ByteDecoder
+```
+### Laws
+**Property:** Encoding and then decoding a value should return the original value unchanged.
+
+```scala
+def isomorphism(a: A)(using codec: ByteCodec[A]): Boolean =
+  codec.decode(codec.encode(a)) == Some(a)
+```
+### Syntax
+Using the typeclass
+```scala
+ByteEncoder[Int].encode(5)
+```
+using syntax
+```scala
+5.encode
+```
+we can have the nice syntax using **extension** method
+```scala
+extension [A](a: A)
+  def encode(using enc: ByteEncoder[A]): Array[Byte] = 
+    enc.encode(a)
 ```
