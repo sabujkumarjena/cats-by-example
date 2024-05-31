@@ -140,3 +140,22 @@ trait Show[A]:
 ```
 ## 4. Monoid
 
+```scala
+trait Monoid[A] extends Semigroup[A]:
+  def combine(x: A, y: A): A // from semigroup
+  def empty: A
+```
+Monoid Laws
+```scala
+given s: Monoid[A]
+def semigroupAssociative(x: A, y: A, z: A): IsIq[A] =
+  s.combine(s.combine(x,y), z) <->
+          s.combine(x, s.combine(y, z))
+def leftIdentity(x: A): IsEq[A] =
+  s.combine(s.empty, x) <-> x
+def rightIdentity(x:A): IsEq[A] =
+  s.combine(x, s.empty) <-> x
+```
+**Higher Kinded Types**
+
+## 5. Functor
