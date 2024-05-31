@@ -108,3 +108,35 @@ extension [A](a: A)
 - By using **given** and some helper methods, we can make typeclasses easier to use
 - Typeclasses usually have **laws**
 - Laws make for excellent test cases
+
+# 2. Wellknown Typeclasses
+
+---
+
+## 1. Eq
+
+```scala
+trait Eq[A]:
+  /** Returns true if x and y are equivalent, false otherwise */
+  def eqv(x: A, y: A): Boolean
+```
+
+## 2. Order
+
+```scala
+trait Order[A]:
+  /** Result of comparing x with y. 
+   * Returns an Int whose sign is:
+   * - negative iff x < y 
+   * - zero iff x = y 
+   * - positive iff x > y */
+  def compare(x: A, y: A): Int
+```
+## 3. Show
+
+```scala
+trait Show[A]:
+  def show(a: A): String
+```
+## 4. Monoid
+
