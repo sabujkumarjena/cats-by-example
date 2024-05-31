@@ -98,3 +98,13 @@ extension [A](a: A)
   def encode(using enc: ByteEncoder[A]): Array[Byte] = 
     enc.encode(a)
 ```
+### SUMMARY
+
+- Typeclasses enable us to:
+  - Extend types outside of our control (Int, String..)
+  - Add functionality without modifying the interface
+  - Use certain part of functionality when we need it (ad-hoc polymorphism)
+  - Provide several implementations of the functionality for the same type
+- By using **given** and some helper methods, we can make typeclasses easier to use
+- Typeclasses usually have **laws**
+- Laws make for excellent test cases
