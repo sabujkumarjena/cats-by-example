@@ -8,6 +8,7 @@ lazy val root = (project in file("."))
     resolvers ++= Seq(
       "Artima Maven Repository" at "https://repo.artima.com/releases"
     ),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-core" % catsVersion,
 

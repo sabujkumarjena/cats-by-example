@@ -208,7 +208,7 @@ def applicativeHomorphism[A,B](a: A, f: A => B): IsEq[F[B]] =
  *      |               |
  *    F |               | ap(pure(f))
  *      |               |
- *      v---------------v
+ *      v-------------->v
  *      B     pure      F[B]
  *      
   */
@@ -218,4 +218,25 @@ def applicativeInterchange[A,B](a: A, ff: F[A => B]): IsEq[F[B]] =
 def applicativeComposition[A,B,C](fa: F[A], fab: F[A => B], fbc: F[B => C]): IsEq[F[C]] =
   val compose: (B => C) =>(A => B) => (A => C) = _.compose
   F.pure(compose).ap(fbc).ap(fab).ap(fa) <-> fbc.ap(fab.ap(fa))
+```
+
+## 7. Monad
+
+```scala
+trait Monad[F[_]] extends ...:
+  def pure[A](x: A): F[A] // from Applicative
+  def flatMap[A,B](fa: F[A])(f: A => F[B]): F[B] // from FlatMap
+  def tailRecM[A,B](a: A)(f: A => F[Either[A,B]]): F[B]  //for stack safety
+```
+Laws
+```scala
+def monadLeftIdentity[A, B](a: A, f: A => F[B]): IsEq[F[B]] =
+  F.pure(a).flatMap(f) <-> f(a)
+  
+def monadRightIdentity[A](fa: F[A]): isEq[F[A]] =
+  fa.flatMap(F.pure) <-> fa
+  
+def flatMapAssociativity[A,B,C]( fa: F[A], f: A => F[B], g: B => F[C]): IsEq[F[C]] =
+  fa.flatMap(f).flatMap(g) <->
+          fa.flatMap(a => f(a).flatMap(g))
 ```
