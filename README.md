@@ -157,5 +157,34 @@ def rightIdentity(x:A): IsEq[A] =
   s.combine(x, s.empty) <-> x
 ```
 **Higher Kinded Types**
+```scala
+*  ordinary types / no type parameters / e.g. String, Int, Double
+* -> *  type constructor/ one type parameter / e.g List, Option, Set
+* -> ->* -> *  type constructor/ two type parameter / e.g Map, Either
+(* -> *) -> *    type constructor/ one type parameter (of kind * -> *) / e.g Functor
+
+```
+**Examples**
+```scala
+Int: *
+List: * -> *
+List[Int]: *  //apply Int as an argument
+Map: * -> * -> *
+Map[String, *]: * -> *  //partial application  //kind projector
+Map[String, Int]: *
+
+// Types of kind * -> *, * -> * -> * , etc. are called higher kinded types (HKT)
+```
 
 ## 5. Functor
+```scala
+trait Functor[F[_]]:
+  def map[A,B](fa: F[A])(f: A => B): F[B]
+
+//Laws
+def covariantIdentity[A](fa: F[A]): IsEq[F[A]] =
+  fa.map(identity) <-> fa
+  
+def covariantComposition[A,B,C]( fa: F[A], f: A => B, g: B => C): IsEq[F[C]] =
+  fa.map(f).map(g) <-> fa.map(f.andThen(g))
+```
