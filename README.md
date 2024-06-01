@@ -240,3 +240,18 @@ def flatMapAssociativity[A,B,C]( fa: F[A], f: A => F[B], g: B => F[C]): IsEq[F[C
   fa.flatMap(f).flatMap(g) <->
           fa.flatMap(a => f(a).flatMap(g))
 ```
+
+## 8. MonadError
+```scala
+trait MonadError[E, A]:
+  def raiseError[A](e: E): F[A]  //from ApplicativeError
+  def handleErrorWith[A](fa: F[A])(f: E => F[A]): F[A]  //from ApplicativeError
+  def pure[A](x: A): F[A]
+  def flatMp[A, B](fa: F[A])(f: A => F[B]): F[B]
+  def tailRecM[A, B](a: A)(f: A => F[Either[A, B]]): F[B]
+```
+Laws
+```scala
+def monadErrorLeftZero[A, B](e: E, f:  => F[B]): IsEq[F[B]]=
+  F.flatMap(F.raiseError[A](e))(f) <-> F.raiseError[B](e) //fail fast
+```
