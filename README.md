@@ -188,3 +188,34 @@ def covariantIdentity[A](fa: F[A]): IsEq[F[A]] =
 def covariantComposition[A,B,C]( fa: F[A], f: A => B, g: B => C): IsEq[F[C]] =
   fa.map(f).map(g) <-> fa.map(f.andThen(g))
 ```
+## 6. Applicative
+```scala
+trait Applicative[F[_]] extends Apply[F]: //extends Functor
+  def pure[A](x: A): F[A] // wraps a value in F
+  def ap[A, B](ff: F[A => B])(fa: F[A]): F[B]  // applies a function in the F context
+
+//Laws
+def applicativeIdentity[A](fa: F[A]): IsEq[F[A]] =
+  F.pure((a:A) => a).ap(fa) <-> fa
+/** pure(id) is the identity function in the F context ( where ap is function application*/ 
+
+def applicativeHomorphism[A,B](a: A, f: A => B): IsEq[F[B]] =
+  F.pure(f).ap(F.pure(a)) <-> F.pure(f(a))
+
+/**
+ *      A     pure      F[A]
+ *      |-------------->|
+ *      |               |
+ *    F |               | ap(pure(f))
+ *      |               |
+ *      v---------------v
+ *      B     pure      F[B]
+ *      
+  */
+def applicativeInterchange[A,B](a: A, ff: F[A => B]): IsEq[F[B]] =
+  ff.ap(F.pure(a)) <-> F.pure((f: A => B) => f(a)).ap (ff)
+  
+def applicativeComposition[A,B,C](fa: F[A], fab: F[A => B], fbc: F[B => C]): IsEq[F[C]] =
+  val compose: (B => C) =>(A => B) => (A => C) = _.compose
+  F.pure(compose).ap(fbc).ap(fab).ap(fa) <-> fbc.ap(fab.ap(fa))
+```

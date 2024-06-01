@@ -46,3 +46,6 @@ listFunctor.map(List(1, 2, 3))(_ * 2)
 
 listFunctor.as(List(1, 3, 5), 10)
 optionFunctor.as(Some(4), 11)
+
+
+
