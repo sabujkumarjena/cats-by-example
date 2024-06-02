@@ -255,3 +255,69 @@ Laws
 def monadErrorLeftZero[A, B](e: E, f:  => F[B]): IsEq[F[B]]=
   F.flatMap(F.raiseError[A](e))(f) <-> F.raiseError[B](e) //fail fast
 ```
+## 9. Foldable
+
+```scala
+trait Foldable[F[_]]:
+  def foldLeft[A, B](fa: F[A], b: B)(f: (B, A) => B): B
+  def foldRight[A, B](fa: F[A], lb: Eval[B])(f: (A, Eval[B]) => Eval[B]): Eval[B]
+
+  def foldMap[A,B](fa: F[A])(f: A => B)(using M: Monoid[B]): B =
+    foldLeft(fa)(M.empty)((b, a) => M.combine(b, f(a)))
+  /** foldMap[Int, String](List(1,2,3))(_.show) === "123"*
+```
+Lawa
+```scala
+def leftFoldConsistentWithFoldMap[A, B](fa: F[A], f: A => B)(using M: Monoid[B]): IsEq[B] =
+  fa.foldMap(f) <-> fa.foldLeft(M.empty){ (b,a) =>
+    b |+| f(a)
+  }
+
+def rightFoldConsistentWIthFoldMap[A,B]( fa: F[A], f: A => B)( using M: Monoid[B]): IsEq[B] =
+  fa.foldMap(f) <-> fa.foldRight(Later(M.empty))((a,lb) => lb.map(f(a) |+| _).value)
+```
+## 10. Traverse
+
+```scala
+trait Traverse[F[_]]...:
+  def traverse[G[_]:Applicative, A,B](fa: F[A])(f: A => G[B]): G[F[B]]
+  def foldLeft[A, B](fa: F[A], b: B)(f: (B,A) => B): B
+  def foldRight[A,B](fa: F[A], lb: Eval[B])(f: (A, Eval[B]) => Eval[B]): Eval[B]
+```
+Laws
+```scala
+def traverseIdentity[A, B](fa: F[A], f: A => B): IsEq[F[B]] =
+  fa.traverse[Id, B](f) <-> F.map(fa)(f)
+def traverseSequentialComposition[A, B, C, M[_], N[_]]
+  (fa: F[A], f: A => M[B], g: B => N[C])(using N: Applicative[N], M: Applicative[M]): IsEq[Nested[M, N, F[C]]] = {
+  val lhs = Nested(M.map(fa.traverse(f))(fb => fb.traverse(g)))
+  val rhs = fa.traverse[Nested[M,N, *], C](a => Nested(M.map(f(a))(g)))
+  lhs <-> rhs
+} 
+//Nested is used to compose M[_] and N[_]
+Nested(fa.traverse(f).map(fb => fb.traverse(g)))
+<-> fa.traverse(a => Nested(f(a).map(g)))
+```
+
+---
+
+# 3 Functional Techniques
+
+---
+## 1. Validations
+
+## 2. Dependency Injection
+
+## 3. Tracking
+
+## 4. State Management
+
+## 5. Trampolines
+
+## 6. Evaluation Modes
+
+## 7. TailRecM
+
+## 8. Monad Transformer
+
+## 9. Suspending Side effect
