@@ -368,4 +368,9 @@ def isEven(n: Int): Trampoline[Boolean] =
 
 ## 8. Monad Transformer
 
+```scala
+type AccountOp[A] = ReaderT[ErrorOr, AccountRepo, A]
+                          //monad,   dependency,  value
+```
+
 ## 9. Suspending Side effect
