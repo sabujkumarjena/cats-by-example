@@ -1,12 +1,12 @@
 package com.allevite.finalProject
 
 import cats.data.{NonEmptyChain, State}
-import cats.implicits._
+import cats.implicits.*
 import com.allevite.part4_FinalProject.app.AppState
 import com.allevite.part4_FinalProject.app.Configuration.IsValid
 import com.allevite.part4_FinalProject.common.IO
 import com.allevite.part4_FinalProject.common.IO.{Done, FlatMap, More}
-import com.allevite.part4_FinalProject.model._
+import com.allevite.part4_FinalProject.model.*
 import com.allevite.part4_FinalProject.service.ExpenseService.{ExpenseOp, ExpenseState}
 import com.allevite.part4_FinalProject.service.PersonService.{PersonOp, PersonState}
 import org.scalacheck.{Arbitrary, Gen}
