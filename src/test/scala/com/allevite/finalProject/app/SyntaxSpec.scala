@@ -4,7 +4,7 @@ import cats.implicits.*
 import com.allevite.finalProject.FpFinalSpec
 import com.allevite.part4_FinalProject.app.AppState
 import com.allevite.part4_FinalProject.app.Configuration.{IsValid, liveEnv}
-import com.allevite.part4_FinalProject.app.SyntaxBak2.*
+import com.allevite.part4_FinalProject.app.Syntax.*
 import com.allevite.part4_FinalProject.common.IO
 import com.allevite.part4_FinalProject.service.ExpenseService.ExpenseOp
 import com.allevite.part4_FinalProject.service.PersonService.PersonOp
