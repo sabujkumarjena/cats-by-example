@@ -305,12 +305,41 @@ Nested(fa.traverse(f).map(fb => fb.traverse(g)))
 
 ---
 ## 1. Validations
+```scala
+// E is for error accumulator and must have a semi group instant
+// A for computed value
+trait Validated[+E, +A]  // it ia a Applicative
 
+final case class Valid[+A](a: A) extends Validated[Nothing, A]
+final case class Invalid[+E](e: E) extends Validated[E, Nothing]
+
+```
 ## 2. Dependency Injection
+```scala
+// Monad[[c] =>> Reader[c, A]]
+Reader[C,A] // C is the environment or config and A is the read or computed value
+```
+## 3. Tracking - Writer Monad
+```scala
+/** Calculate a value while we accumulate data in a log */
+Writer[W, A]
+//W - type of the log, must have semigroup instance so wwe can combine it
+//A - computed value
+```
+```scala
+type Tracked[A] = Writer[List[String], A]
+```
 
-## 3. Tracking
+## 4. State Management vai State Monad
+```scala
+// Monad[[s] =>> State[s, A]]
+class State[S, A](val run: S => (S,A))  // initail state => (final state, return value)
 
-## 4. State Management
+object State:
+  def get[S]: State[S,S] //reads the state
+  def set[S](s: S): State[S, Unit]  //writes the state
+  def modify[S](f: S => S): State[S, Unit] //Update the state with function
+```
 
 ## 5. Trampolines (Stack-safety)
 - **function calls** creates stack-frames in call stack
@@ -362,15 +391,37 @@ def isEven(n: Int): Trampoline[Boolean] =
     if n==0 then Done(false) else More(() => isEven(n-1))
 ```
 
-## 6. Evaluation Modes
+## 6. Evaluation Modes - Eval Monad
+```scala
+trait Eval[+A]:
+  def value: A
+  def map[B](f: A => B): Eval[B] // stack safe // uses trampoline internally
+  def flatMap[B](f: A => Eval[B]): Eval[B] // // stack safe // uses trampoline internally
 
+object Eval:
+  def now[A](a: A): Eval[A] // esger - no memo - val
+  def later[A](a :=> A): Eval[A] //lazy - memo - lazy val
+  def always[A](a: => A): Eval[A] // lazy - no memo - def
+  def defer[A](a: => Eval[A]): Eval[A] // defers the computation of an Eval
+```
 ## 7. TailRecM
 
 ## 8. Monad Transformer
-
+```scala
+ReaderT[F,A,B] // wrapper for A => F[B]
+```
 ```scala
 type AccountOp[A] = ReaderT[ErrorOr, AccountRepo, A]
                           //monad,   dependency,  value
 ```
 
 ## 9. Suspending Side effect
+
+## Summary
+- Perform validations that accumulate errors via **Validated**
+- Declare dependencies via the **Reader monad** for easier composition
+- Track information via the **Writer monad**
+- Manage state in pure manner via the **State monad**
+- Use different evaluation modes (especially the lazy mode) via the **Eval monad**
+- Define rich interfaces by stacking effects, and using transformers to facilitate the composition
+- Suspend effects to preserve referential transparency in programs
